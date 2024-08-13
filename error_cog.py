@@ -116,9 +116,14 @@ class Rivet2ErrorCog(commands.Cog):
 			f = self.database.get_errcode_facility(errcode)
 			if f:
 				facilityIdentity = f.name()
+				if f.is_invalid_error(errcode):
+					return await interaction.response.send_message(
+						f"Invalid error 0x{errcode:08X} for facility `{facilityIdentity}`."
+					)
+
 				if f.description():
 					facilityIdentity += f"\n({f.description()})"
-				
+
 				# Check if there are subfacilities - if so, try to find stuff about it.
 				if f.has_subfacilities():
 					sf = f.get_error_subfacility_info(errcode)

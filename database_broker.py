@@ -29,14 +29,16 @@ class ErrorFacility():
 
 	This class represents an error code facility.
 	"""
-	def __init__(self,
-				db_facility_object: dict):
+	def __init__(self, db_facility_object: dict):
 		self._name = db_facility_object["name"]
 		self._description = db_facility_object.get("description")
 
 		# Allow facilities without 'error-codes' by falling back to empty dict.
 		db_facilities = db_facility_object.get("error-codes", dict())
 		self.error_codes = _cvt_db_to_runtime(db_facilities)
+
+		# Allow facilities without 'invalid-ranges' by falling back to empty list.
+		self.invalid_ranges = db_facility_object.get("invalid-ranges", [])
 
 		# 'subfacility-bits' is only allowed if 'subfacilities' also exists
 		sfbits = db_facility_object.get("subfacility-bits")
@@ -53,6 +55,17 @@ class ErrorFacility():
 
 	def description(self) -> str | None:
 		return self._description
+
+	def is_invalid_error(self, error_code: int) -> bool:
+		errnum = (error_code & ERROR_NUM_MASK)
+
+		for inv_range in self.invalid_ranges:
+			range_start = inv_range[0]
+			range_end = inv_range[1]
+
+			if range_start <= errnum <= range_end:
+				return True
+		return False			
 
 	def get_error_information(self, error_code: int) -> tuple[str | None, str | None]:
 		"""
