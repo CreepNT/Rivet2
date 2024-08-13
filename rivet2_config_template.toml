@@ -1,0 +1,10 @@
+[DatabaseFiles]
+ErrorDatabase = "./databases/error_codes.toml"
+ShortCodeDatabase = "./databases/short_codes.toml"
+
+[Bot]
+DiscordToken = "<YOUR BOT TOKEN HERE>"
+AdministratorWhitelist = [
+    # Discord User ID of persons allowed to execute administrator commands.
+    # Note that the bot owner is automatically whitelisted.
+]
